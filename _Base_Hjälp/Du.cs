@@ -13,7 +13,7 @@ namespace Lite_olika_test
         protected KeyboardState kstate;
         protected Vector2 Vel = new Vector2(0,0);
         protected float Friction = 0.9f;
-        protected int Max = 13;
+        protected int Max = 100;
         public Du(int width, int height) : base(0, 0, width, height){}
         public virtual void Update()
         {

@@ -1,4 +1,5 @@
 ﻿using Lek2;
+using Lite_olika_test._Base_Hjälp;
 using Lite_olika_test.Base_Hjälp;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,6 +17,7 @@ public class Game1 : Game
     private MouseState mstate;
     private Du DuTillKamera = new Du(100,100);
     private Background background = new Background();
+    private SnowShow snowShow;
 
     public Game1()
     {
@@ -35,15 +37,20 @@ public class Game1 : Game
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         texture = new Texture2D(GraphicsDevice, 1, 1);
-        texture.SetData(new[] { Color.White });
+        texture.SetData(new[] {Color.White});
+        snowShow = new SnowShow(texture);
         // TODO: use this.Content to load your game content here
     }
     protected override void Update(GameTime gameTime)
     {
         mstate = Mouse.GetState();
         kstate = Keyboard.GetState();
-        
 
+        if (kstate.IsKeyDown(Keys.R))
+        {
+            snowShow = new SnowShow(texture);
+        }
+        snowShow.Update();
 
 
 
@@ -67,13 +74,14 @@ public class Game1 : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.Black);
+        snowShow.Draw(_spriteBatch);
         _spriteBatch.Begin(transformMatrix:camera2D.get_transformation());
-            foreach(MinRectangle r in background.recs)
+            /*foreach(MinRectangle r in background.recs)
             {
                 _spriteBatch.Draw(texture,r.rec,Color.LightYellow);
-            }
+            }*/
 
-
+            
 
 
 
@@ -87,7 +95,7 @@ public class Game1 : Game
 
 
             
-            _spriteBatch.Draw(texture,DuTillKamera.rec,Color.Gray);
+            //_spriteBatch.Draw(texture,DuTillKamera.rec,Color.Gray);
         _spriteBatch.End();
         base.Draw(gameTime);
     }

@@ -16,7 +16,7 @@ namespace Lite_olika_test.Base_Hjälp
         {
             for(int i = 0; i < 200; i++)
             {
-                Recs.Add(new MinRectangle(ran.Next((int)Centrum.X-900,(int)Centrum.X+900),ran.Next((int)Centrum.Y-900,(int)Centrum.Y+900),2,2));
+                Recs.Add(new MinRectangle(ran.Next((int)Centrum.X-900,(int)Centrum.X+900),ran.Next((int)Centrum.Y-900,(int)Centrum.Y+900),3,3));
             }
         }
         public void Update(Vector2 centrum)
