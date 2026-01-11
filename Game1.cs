@@ -1,4 +1,5 @@
-﻿using Lek2;
+﻿using System;
+using Lek2;
 using Lite_olika_test._Base_Hjälp;
 using Lite_olika_test.Base_Hjälp;
 using Microsoft.Xna.Framework;
@@ -16,8 +17,11 @@ public class Game1 : Game
     private KeyboardState kstate;
     private MouseState mstate;
     private Du DuTillKamera = new Du(100,100);
+    private Random ran = new Random();
+    private bool SpasificKeyPressed = true;
+    private Quadtree quadtree = new Quadtree(new MinRectangle(900,500,1024,1024),4);
     private Background background = new Background();
-    private SnowShow snowShow;
+    
 
     public Game1()
     {
@@ -38,7 +42,6 @@ public class Game1 : Game
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         texture = new Texture2D(GraphicsDevice, 1, 1);
         texture.SetData(new[] {Color.White});
-        snowShow = new SnowShow(texture);
         // TODO: use this.Content to load your game content here
     }
     protected override void Update(GameTime gameTime)
@@ -46,20 +49,24 @@ public class Game1 : Game
         mstate = Mouse.GetState();
         kstate = Keyboard.GetState();
 
-        if (kstate.IsKeyDown(Keys.R))
+
+        if (kstate.IsKeyDown(Keys.Space)&&SpasificKeyPressed)
         {
-            snowShow = new SnowShow(texture);
+            //SpasificKeyPressed=false;
+            quadtree.Add(new MinRectangle(mstate.Position.ToVector2(),3,3));
         }
-        snowShow.Update();
 
 
 
 
-
-
+        
         DuTillKamera.Update();
         background.Update(DuTillKamera.centrum);
         camera2D.Pos=DuTillKamera.centrum;
+        if (kstate.IsKeyUp(Keys.Space))
+        {
+            SpasificKeyPressed=true;
+        }
         if (kstate.IsKeyDown(Keys.R))
         {
             DuTillKamera.centrum *=0;
@@ -74,7 +81,12 @@ public class Game1 : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.Black);
-        snowShow.Draw(_spriteBatch);
+        _spriteBatch.Begin();
+            
+            quadtree.DrawBoundry(_spriteBatch,texture);
+            quadtree.Draw(_spriteBatch,texture);
+
+        _spriteBatch.End();
         _spriteBatch.Begin(transformMatrix:camera2D.get_transformation());
             /*foreach(MinRectangle r in background.recs)
             {
