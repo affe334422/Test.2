@@ -22,7 +22,7 @@ public class Game1 : Game
     private bool SpasificKeyPressed = true;
     static int Capacity = 1;
     static MinRectangle Boundry = new MinRectangle(900,500,3000,3000);
-    private Quadtree quadtree = new Quadtree(Boundry,Capacity);
+    private Quadtree quadtree = new Quadtree(Boundry,Capacity,true);
     private List<BasFiender> BL = new List<BasFiender>();
     private Background background = new Background();
     
@@ -62,14 +62,14 @@ public class Game1 : Game
             //SpasificKeyPressed=false;
             //quadtree.Add(new MinRectangle(mstate.Position.ToVector2(),3,3));
             BL.Add(new BasFiender(mstate.Position.ToVector2(),5,5));
-            quadtree = new Quadtree(Boundry,Capacity);
+            quadtree = new Quadtree(Boundry,Capacity,true);
             foreach(BasFiender b in BL)
             {
                 quadtree.Add(b);
             }
         }
         BL.ForEach(b=>b.Update(mstate.Position.ToVector2()));
-        quadtree=new Quadtree(Boundry,Capacity);
+        quadtree=new Quadtree(Boundry,Capacity,true);
         BL.ForEach(b=>quadtree.Add(b));
         colisions();
 
@@ -139,10 +139,14 @@ public class Game1 : Game
 
     void colisions()
     {
+        int a = 0;
+        int b = 0;
         foreach(MinRectangle mr in BL){
-            Console.WriteLine("1");
+            a++;
             List<MinRectangle> Fiender = quadtree.Query(mr);
             for(int j=0;j<Fiender.Count;j++){
+                b++;
+                //Console.WriteLine("1");
                 if (mr.rec.Intersects(Fiender[j].rec)){
                     // Räkna ut överlapp
                     int overlapX = Math.Min(mr.rec.Right, Fiender[j].rec.Right) - Math.Max(mr.rec.Left, Fiender[j].rec.Left);
@@ -180,6 +184,8 @@ public class Game1 : Game
                 }
             }
         }
-        Console.WriteLine(BL.Count);
+        if(b>1000){
+            //Console.WriteLine(a+" "+b+" collison calulations");
+        }
     }
 }

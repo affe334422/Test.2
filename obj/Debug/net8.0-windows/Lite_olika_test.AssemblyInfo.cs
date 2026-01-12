@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Lite_olika_test")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+91024c6b872a2ba28bf94a9142149f161d5a0553")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+25be1eabd1038dc52445a4446f34c6cdf146fcfc")]
 [assembly: System.Reflection.AssemblyProductAttribute("Lite_olika_test")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Lite_olika_test")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

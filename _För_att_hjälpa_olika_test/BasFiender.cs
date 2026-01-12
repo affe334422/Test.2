@@ -33,6 +33,6 @@ public class BasFiender : MinRectangle
             Vel.X = (float)(Max *Math.Cos(Vink));
             Vel.Y = (float)(Max *Math.Sin(Vink));
         }
-        //centrum += Vel;
+        centrum += Vel;
     }   
 }
