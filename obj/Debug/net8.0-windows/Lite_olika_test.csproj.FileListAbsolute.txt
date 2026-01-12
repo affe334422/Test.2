@@ -24,3 +24,4 @@ C:\Users\alle07002\OneDrive - Växjö kommun\Skrivbordet\program\Lite_olika_test
 C:\Users\alle07002\OneDrive - Växjö kommun\Skrivbordet\program\Lite_olika_test\obj\Debug\net8.0-windows\Lite_olika_test.pdb
 C:\Users\alle07002\OneDrive - Växjö kommun\Skrivbordet\program\Lite_olika_test\obj\Debug\net8.0-windows\Lite_olika_test.genruntimeconfig.cache
 C:\Users\alle07002\OneDrive - Växjö kommun\Skrivbordet\program\Lite_olika_test\obj\Debug\net8.0-windows\ref\Lite_olika_test.dll
+C:\Users\alle07002\OneDrive - Växjö kommun\Skrivbordet\program\Lite_olika_test\obj\Debug\net8.0-windows\Lite_olika_test.sourcelink.json

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Lek2;
 using Lite_olika_test._Base_Hjälp;
 using Lite_olika_test.Base_Hjälp;
@@ -19,7 +20,10 @@ public class Game1 : Game
     private Du DuTillKamera = new Du(100,100);
     private Random ran = new Random();
     private bool SpasificKeyPressed = true;
-    private Quadtree quadtree = new Quadtree(new MinRectangle(900,500,1024,1024),4);
+    static int Capacity = 1;
+    static MinRectangle Boundry = new MinRectangle(900,500,3000,3000);
+    private Quadtree quadtree = new Quadtree(Boundry,Capacity);
+    private List<BasFiender> BL = new List<BasFiender>();
     private Background background = new Background();
     
 
@@ -49,12 +53,27 @@ public class Game1 : Game
         mstate = Mouse.GetState();
         kstate = Keyboard.GetState();
 
-
+        if (kstate.IsKeyDown(Keys.C))
+        {
+            BL.Clear();
+        }
         if (kstate.IsKeyDown(Keys.Space)&&SpasificKeyPressed)
         {
             //SpasificKeyPressed=false;
-            quadtree.Add(new MinRectangle(mstate.Position.ToVector2(),3,3));
+            //quadtree.Add(new MinRectangle(mstate.Position.ToVector2(),3,3));
+            BL.Add(new BasFiender(mstate.Position.ToVector2(),5,5));
+            quadtree = new Quadtree(Boundry,Capacity);
+            foreach(BasFiender b in BL)
+            {
+                quadtree.Add(b);
+            }
         }
+        BL.ForEach(b=>b.Update(mstate.Position.ToVector2()));
+        quadtree=new Quadtree(Boundry,Capacity);
+        BL.ForEach(b=>quadtree.Add(b));
+        colisions();
+
+
 
 
 
@@ -85,6 +104,10 @@ public class Game1 : Game
             
             quadtree.DrawBoundry(_spriteBatch,texture);
             quadtree.Draw(_spriteBatch,texture);
+            /*foreach(MinRectangle mr in quadtree.Query(new MinRectangle(mstate.Position.ToVector2(), 100, 100)))
+            {
+                _spriteBatch.Draw(texture,mr.rec,Color.Blue);
+            }*/
 
         _spriteBatch.End();
         _spriteBatch.Begin(transformMatrix:camera2D.get_transformation());
@@ -110,5 +133,53 @@ public class Game1 : Game
             //_spriteBatch.Draw(texture,DuTillKamera.rec,Color.Gray);
         _spriteBatch.End();
         base.Draw(gameTime);
+    }
+
+
+
+    void colisions()
+    {
+        foreach(MinRectangle mr in BL){
+            Console.WriteLine("1");
+            List<MinRectangle> Fiender = quadtree.Query(mr);
+            for(int j=0;j<Fiender.Count;j++){
+                if (mr.rec.Intersects(Fiender[j].rec)){
+                    // Räkna ut överlapp
+                    int overlapX = Math.Min(mr.rec.Right, Fiender[j].rec.Right) - Math.Max(mr.rec.Left, Fiender[j].rec.Left);
+                    int overlapY = Math.Min(mr.rec.Bottom, Fiender[j].rec.Bottom) - Math.Max(mr.rec.Top, Fiender[j].rec.Top);
+
+                    // Putta isär i minsta riktningen
+                    if (overlapX < overlapY)
+                    {
+                        // putta horisontellt
+                        if (mr.centrum.X < Fiender[j].centrum.X)
+                        {
+                            mr.centrum_x -= overlapX / 2f;
+                            Fiender[j].centrum_x += overlapX / 2f;
+                        }
+                        else
+                        {
+                            mr.centrum_x += overlapX / 2f;
+                            Fiender[j].centrum_x -= overlapX / 2f;
+                        }
+                    }
+                    else
+                    {
+                        // putta vertikalt
+                        if (mr.centrum.Y < Fiender[j].centrum.Y)
+                        {
+                            mr.centrum_y -= overlapY / 2f;
+                            Fiender[j].centrum_y += overlapY / 2f;
+                        }
+                        else
+                        {
+                            mr.centrum_y += overlapY / 2f;
+                            Fiender[j].centrum_y -= overlapY / 2f;
+                        }
+                    }
+                }
+            }
+        }
+        Console.WriteLine(BL.Count);
     }
 }
