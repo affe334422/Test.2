@@ -54,7 +54,7 @@ public class Quadtree
         }
         if (first)
         {
-            Console.WriteLine(qurytimes);
+            //Console.WriteLine(qurytimes);
         }
         return QL;
     }

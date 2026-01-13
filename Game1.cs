@@ -69,6 +69,7 @@ public class Game1 : Game
             }
         }
         BL.ForEach(b=>b.Update(mstate.Position.ToVector2()));
+        
         quadtree=new Quadtree(Boundry,Capacity,true);
         BL.ForEach(b=>quadtree.Add(b));
         colisions();
@@ -136,16 +137,22 @@ public class Game1 : Game
     }
 
 
-
+    void Gravity()
+    {
+        foreach(MinRectangle mr in BL)
+        {
+            List<MinRectangle> Affected = quadtree.Query(new MinRectangle(mr.centrum,200,200));
+            for(int j = 0; j < Affected.Count; j++)
+            {
+                
+            }
+        }
+    }
     void colisions()
     {
-        int a = 0;
-        int b = 0;
         foreach(MinRectangle mr in BL){
-            a++;
             List<MinRectangle> Fiender = quadtree.Query(mr);
             for(int j=0;j<Fiender.Count;j++){
-                b++;
                 //Console.WriteLine("1");
                 if (mr.rec.Intersects(Fiender[j].rec)){
                     // Räkna ut överlapp
@@ -183,9 +190,6 @@ public class Game1 : Game
                     }
                 }
             }
-        }
-        if(b>1000){
-            //Console.WriteLine(a+" "+b+" collison calulations");
         }
     }
 }
