@@ -1,79 +1,82 @@
 
-
 using System;
 using System.Collections.Generic;
-using Lite_olika_test;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 
-public class Quadtree
+public class Quadtree<T> where T : QT_Compatible
 {
-    private bool HasSubdivided = false;
-    Quadtree NorthWest;
-    Quadtree NorthEast;
-    Quadtree SouthWest;
-    Quadtree SouthEast;
-    private int Capacity; // 4
-    MinRectangle Boundry;
-    MinRectangle BoundryMinimum = new MinRectangle(0,0,1,1);
-    List<MinRectangle> RecList; 
-    int qurytimes = 0;
-    bool first = false;
+    protected bool HasSubdivided = false;
+    protected Quadtree<T> NorthWest;
+    protected Quadtree<T> NorthEast;
+    protected Quadtree<T> SouthWest;
+    protected Quadtree<T> SouthEast;
+    protected int Capacity; // 4
+    protected MinRectangle Boundry;
+    protected MinRectangle BoundryMinimum = new MinRectangle(0,0,1,1);
+    protected List<T> RecList; 
+    protected bool Drawb = false;
+
+    public Quadtree(int width, int height, int Capacity)
+    {
+        Boundry = new MinRectangle(900,500,width,height);
+        this.Capacity=Capacity;
+    }
     public Quadtree(MinRectangle Boundry, int Capacity)
     {
         this.Boundry=Boundry;
         this.Capacity = Capacity;
-        RecList = new List<MinRectangle>();
+        RecList = new List<T>();
     }
     public Quadtree(MinRectangle Boundry, int Capacity, bool start)
     {
         this.Boundry=Boundry;
         this.Capacity = Capacity;
-        RecList = new List<MinRectangle>();
-        first = start;
+        RecList = new List<T>();
     }
-    public List<MinRectangle> Query(MinRectangle Interaction_range)
+    public virtual List<T> Query(MinRectangle Interaction_range)
     {
-        qurytimes++;
-        List<MinRectangle> QL = new List<MinRectangle>();
-        if (Interaction_range.rec.Intersects(Boundry.rec))
+        List<T> QL = new List<T>();
+        if (!Interaction_range.rec.Intersects(Boundry.rec)){
+            return QL;
+        }
+        if (Interaction_range.rec.Intersects(Boundry.rec)&&!HasSubdivided)
         {
             QL.AddRange(RecList);
+            Drawb=true;
+            return QL;
         }
-        if (HasSubdivided)
+        else if (HasSubdivided&&Interaction_range.rec.Intersects(Boundry.rec))
         {
             QL.AddRange(NorthEast.Query(Interaction_range));
-            qurytimes+=NorthEast.qurytimes;
             QL.AddRange(NorthWest.Query(Interaction_range));
-            qurytimes+=NorthWest.qurytimes;
             QL.AddRange(SouthEast.Query(Interaction_range));
-            qurytimes+=SouthEast.qurytimes;
             QL.AddRange(SouthWest.Query(Interaction_range));
-            qurytimes+=SouthWest.qurytimes;
-        }
-        if (first)
-        {
-            //Console.WriteLine(qurytimes);
+            Drawb=true;
+            return QL;
         }
         return QL;
     }
-    private bool Contains(MinRectangle newValue)
+
+    
+    
+    private bool Contains(T newValue)
     {
         int left = Boundry.rec.Left;
         int right = Boundry.rec.Right;
         int top = Boundry.rec.Top;
         int bottom = Boundry.rec.Bottom;
 
-        int x = (int)newValue.centrum_x;
-        int y = (int)newValue.centrum_y;
+        int x = (int)newValue.CentrumXY().X;
+        int y = (int)newValue.CentrumXY().Y;
         if (x>=left&&x<=right&&y>=top&&y<=bottom)
         {
             return true;
         }
         return false;
     }
-    public bool Add(MinRectangle newValue)
+    public virtual bool Add(T newValue)
     {
         if (MinnimumBoundryReached())
         {
@@ -113,7 +116,7 @@ public class Quadtree
                 Subdivide();
             }
             
-            foreach(MinRectangle mr in RecList)
+            foreach(T mr in RecList)
             {
                 if (NorthEast.Add(mr)){}
                 else if (NorthWest.Add(mr)){}
@@ -137,7 +140,6 @@ public class Quadtree
             return false;
         }
     }
-
     private bool MinnimumBoundryReached()
     {
         if (Boundry.rec.Width/4 < BoundryMinimum.rec.Width||Boundry.rec.Height/4<BoundryMinimum.rec.Height)
@@ -146,21 +148,19 @@ public class Quadtree
         }
         return false;
     }
-
-    private void Subdivide()
+    protected virtual void Subdivide()
     {
-        NorthEast = new Quadtree(new MinRectangle((int)Boundry.centrum_x-Boundry.rec.Width/4,(int)Boundry.centrum_y-Boundry.rec.Height/4,(int)(Boundry.rec.Width/2+1),(int)(Boundry.rec.Height/2+1)),Capacity);
-        NorthWest = new Quadtree(new MinRectangle((int)Boundry.centrum_x+Boundry.rec.Width/4,(int)Boundry.centrum_y-Boundry.rec.Height/4,(int)(Boundry.rec.Width/2+1),(int)(Boundry.rec.Height/2+1)),Capacity);
-        SouthEast = new Quadtree(new MinRectangle((int)Boundry.centrum_x-Boundry.rec.Width/4,(int)Boundry.centrum_y+Boundry.rec.Height/4,(int)(Boundry.rec.Width/2+1),(int)(Boundry.rec.Height/2+1)),Capacity);
-        SouthWest = new Quadtree(new MinRectangle((int)Boundry.centrum_x+Boundry.rec.Width/4,(int)Boundry.centrum_y+Boundry.rec.Height/4,(int)(Boundry.rec.Width/2+1),(int)(Boundry.rec.Height/2+1)),Capacity);
+        NorthEast = new Quadtree<T>(new MinRectangle((int)Boundry.centrum_x-Boundry.rec.Width/4,(int)Boundry.centrum_y-Boundry.rec.Height/4,(int)(Boundry.rec.Width/2+1),(int)(Boundry.rec.Height/2+1)),Capacity);
+        NorthWest = new Quadtree<T>(new MinRectangle((int)Boundry.centrum_x+Boundry.rec.Width/4,(int)Boundry.centrum_y-Boundry.rec.Height/4,(int)(Boundry.rec.Width/2+1),(int)(Boundry.rec.Height/2+1)),Capacity);
+        SouthEast = new Quadtree<T>(new MinRectangle((int)Boundry.centrum_x-Boundry.rec.Width/4,(int)Boundry.centrum_y+Boundry.rec.Height/4,(int)(Boundry.rec.Width/2+1),(int)(Boundry.rec.Height/2+1)),Capacity);
+        SouthWest = new Quadtree<T>(new MinRectangle((int)Boundry.centrum_x+Boundry.rec.Width/4,(int)Boundry.centrum_y+Boundry.rec.Height/4,(int)(Boundry.rec.Width/2+1),(int)(Boundry.rec.Height/2+1)),Capacity);
         //Console.WriteLine(NorthEast.Boundry.centrum+" "+NorthWest.Boundry.centrum+" "+SouthEast.Boundry.centrum+" "+SouthWest.Boundry.centrum);
         HasSubdivided=true;
     }
-
     public void DrawBoundry(SpriteBatch _spriteBatch, Texture2D texture)
     {
         Color co = new Color((int)(Boundry.centrum_x/3000*255),20,(int)(Boundry.centrum_y/3000*255));
-        if(RecList.Count>0){
+        if(/*Drawb*/RecList.Count>0){
             _spriteBatch.Draw(texture,new MinRectangle(Boundry.centrum,Boundry.rec.Width,Boundry.rec.Height).rec,co);
         }
         if (HasSubdivided)
@@ -171,11 +171,11 @@ public class Quadtree
             SouthWest.DrawBoundry(_spriteBatch,texture);
         }
     }
-    public void Draw(SpriteBatch _spriteBatch, Texture2D texture)
+    public virtual void Draw(SpriteBatch _spriteBatch, Texture2D texture)
     {
-        foreach(MinRectangle old in RecList)
+        foreach(T old in RecList)
         {
-            _spriteBatch.Draw(texture,old.rec,Color.Blue);
+            _spriteBatch.Draw(texture,old.GetRectangle(),Color.Blue);
         }
         if (HasSubdivided)
         {

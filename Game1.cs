@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Lek2;
-using Lite_olika_test._Base_Hjälp;
-using Lite_olika_test.Base_Hjälp;
+﻿
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
-namespace Lite_olika_test;
 
 public class Game1 : Game
 {
@@ -17,15 +11,8 @@ public class Game1 : Game
     private Texture2D texture;
     private KeyboardState kstate;
     private MouseState mstate;
-    private Du DuTillKamera = new Du(100,100);
-    private Random ran = new Random();
-    private bool SpasificKeyPressed = true;
-    static int Capacity = 1;
-    static MinRectangle Boundry = new MinRectangle(900,500,3000,3000);
-    private Quadtree quadtree = new Quadtree(Boundry,Capacity,true);
-    private List<BasFiender> BL = new List<BasFiender>();
-    private Background background = new Background();
-    
+    _GameRunSetup _GameRun;
+    bool start = true;
 
     public Game1()
     {
@@ -52,46 +39,14 @@ public class Game1 : Game
     {
         mstate = Mouse.GetState();
         kstate = Keyboard.GetState();
-
-        if (kstate.IsKeyDown(Keys.C))
+        if (start)
         {
-            BL.Clear();
+            start=false;
+            _GameRun = new ChatGPT_game(_graphics,_spriteBatch,camera2D,texture);
         }
-        if (kstate.IsKeyDown(Keys.Space)&&SpasificKeyPressed)
-        {
-            //SpasificKeyPressed=false;
-            //quadtree.Add(new MinRectangle(mstate.Position.ToVector2(),3,3));
-            BL.Add(new BasFiender(mstate.Position.ToVector2(),5,5));
-            quadtree = new Quadtree(Boundry,Capacity,true);
-            foreach(BasFiender b in BL)
-            {
-                quadtree.Add(b);
-            }
-        }
-        BL.ForEach(b=>b.Update(mstate.Position.ToVector2()));
-        
-        quadtree=new Quadtree(Boundry,Capacity,true);
-        BL.ForEach(b=>quadtree.Add(b));
-        colisions();
-
-
-
-
-
+        _GameRun.Update();
 
         
-        DuTillKamera.Update();
-        background.Update(DuTillKamera.centrum);
-        camera2D.Pos=DuTillKamera.centrum;
-        if (kstate.IsKeyUp(Keys.Space))
-        {
-            SpasificKeyPressed=true;
-        }
-        if (kstate.IsKeyDown(Keys.R))
-        {
-            DuTillKamera.centrum *=0;
-            background=new Background();
-        }
         if (kstate.IsKeyDown(Keys.Escape)){
             Exit();
         }
@@ -101,18 +56,10 @@ public class Game1 : Game
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.Black);
-        _spriteBatch.Begin();
-            
-            quadtree.DrawBoundry(_spriteBatch,texture);
-            quadtree.Draw(_spriteBatch,texture);
-            /*foreach(MinRectangle mr in quadtree.Query(new MinRectangle(mstate.Position.ToVector2(), 100, 100)))
-            {
-                _spriteBatch.Draw(texture,mr.rec,Color.Blue);
-            }*/
+        _GameRun.Draw();
 
-        _spriteBatch.End();
         _spriteBatch.Begin(transformMatrix:camera2D.get_transformation());
-            /*foreach(MinRectangle r in background.recs)
+            /*foreach(BasFiender r in background.recs)
             {
                 _spriteBatch.Draw(texture,r.rec,Color.LightYellow);
             }*/
@@ -134,62 +81,5 @@ public class Game1 : Game
             //_spriteBatch.Draw(texture,DuTillKamera.rec,Color.Gray);
         _spriteBatch.End();
         base.Draw(gameTime);
-    }
-
-
-    void Gravity()
-    {
-        foreach(MinRectangle mr in BL)
-        {
-            List<MinRectangle> Affected = quadtree.Query(new MinRectangle(mr.centrum,200,200));
-            for(int j = 0; j < Affected.Count; j++)
-            {
-                
-            }
-        }
-    }
-    void colisions()
-    {
-        foreach(MinRectangle mr in BL){
-            List<MinRectangle> Fiender = quadtree.Query(mr);
-            for(int j=0;j<Fiender.Count;j++){
-                //Console.WriteLine("1");
-                if (mr.rec.Intersects(Fiender[j].rec)){
-                    // Räkna ut överlapp
-                    int overlapX = Math.Min(mr.rec.Right, Fiender[j].rec.Right) - Math.Max(mr.rec.Left, Fiender[j].rec.Left);
-                    int overlapY = Math.Min(mr.rec.Bottom, Fiender[j].rec.Bottom) - Math.Max(mr.rec.Top, Fiender[j].rec.Top);
-
-                    // Putta isär i minsta riktningen
-                    if (overlapX < overlapY)
-                    {
-                        // putta horisontellt
-                        if (mr.centrum.X < Fiender[j].centrum.X)
-                        {
-                            mr.centrum_x -= overlapX / 2f;
-                            Fiender[j].centrum_x += overlapX / 2f;
-                        }
-                        else
-                        {
-                            mr.centrum_x += overlapX / 2f;
-                            Fiender[j].centrum_x -= overlapX / 2f;
-                        }
-                    }
-                    else
-                    {
-                        // putta vertikalt
-                        if (mr.centrum.Y < Fiender[j].centrum.Y)
-                        {
-                            mr.centrum_y -= overlapY / 2f;
-                            Fiender[j].centrum_y += overlapY / 2f;
-                        }
-                        else
-                        {
-                            mr.centrum_y += overlapY / 2f;
-                            Fiender[j].centrum_y -= overlapY / 2f;
-                        }
-                    }
-                }
-            }
-        }
     }
 }
