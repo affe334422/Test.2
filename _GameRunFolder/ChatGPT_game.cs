@@ -18,10 +18,10 @@ public class ChatGPT_game : _GameRunSetup
         Color.Red,
         Color.Green,
         Color.Blue,
-        Color.Yellow,
         Color.Purple,
-        Color.Orange,
-        Color.Cyan,
+        Color.Yellow,
+        /*Color.Orange,
+        Color.Cyan,*/
         // lägg till hur många du vill
     };
 
@@ -143,7 +143,7 @@ public class Particle
     public Color Color;
 
     const float VisionRadius = 100f;
-    const float MaxSpeed = 10f;
+    const float MaxSpeed = 5f;
     const float Friction = 0.8f;
 
     public Particle(Vector2 position, Color color)
@@ -314,8 +314,8 @@ public static class ForceMatrix
 
     static int colorCount;
 
-    const float MinForce = -2f;
-    const float MaxForce = 0.5f;
+    const float MinForce = -5f;
+    const float MaxForce = 2f;
 
     public static void Generate(Color[] colors)
     {
